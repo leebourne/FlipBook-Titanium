@@ -35,10 +35,13 @@ That's pretty much it! Any edits/improvements are appreciated.
 
 
 == Starting with a PDF
-Install PDFTK from http://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
-Install ImageMagick from http://www.imagemagick.org/
-Take a PDF and run the scripts prepare_catalogue.sh in the scripts directory against it.
-e.g. scripts/prepare_example <your pdf name>.pdf Resources/<your pdf name>
-Hyperlinks must be annotated correctly in the PDF, see http://stylisticweb.com/blog/how-to-create-pdf-hyperlinks.
-If you need to you can experiment with the image quality settings in the script. Be careful about changing the size though as the iPad is pretty slow at resizing images on the fly.
-Modify Resources/app.js and complete the values for variables 'pdfName' and 'numPages'
+-----------------------
+
+-Install PDFTK from http://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
+-Install ImageMagick from http://www.imagemagick.org/
+-Take a PDF and run the scripts prepare_catalogue.sh in the scripts directory against it.
+--e.g. scripts/prepare_example <your pdf name>.pdf Resources/<your pdf name>
+--Hyperlinks must be annotated correctly in the PDF, see http://stylisticweb.com/blog/how-to-create-pdf-hyperlinks.
+--If you need to you can experiment with the image quality settings in the script. Be careful about changing the size though as the iPad is pretty slow at resizing images on the fly.
+-Modify Resources/app.js and complete the values for variables 'pdfName' and 'numPages'
+-Build and run your app - that's it!
