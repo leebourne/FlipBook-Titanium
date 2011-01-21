@@ -1,0 +1,2 @@
+/URI (mailto:lee@quru.com)
+/Rect [380.454 427.199 470.998 487.199]

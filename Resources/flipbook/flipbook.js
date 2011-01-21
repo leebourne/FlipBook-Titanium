@@ -1,9 +1,13 @@
-///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-//  FlipBook 0.7 By Adriano
-//       23/12/2010
+//  23/12/2010 - FlipBook 0.7 By Adriano
+//  21/01/2011 - Extended by Lee Khan-Bourne, all changes commented with LKB
+//				 Extended to cater for hyperlinks
+//				 Added first and last page buttons
+//				 Disabled pagination.
+//				 Added option of pagesDir to allow pages to be moved to the data dir in the future
 //
-///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 
 // TODO:
@@ -31,8 +35,10 @@ var flipbook_imgBottom;
 var flipbook_pgBottom;
 var flipbook_imgRear;
 var flipbook_pgTop;
+var flipbook_btn_first;
 var flipbook_btn_prev;
 var flipbook_btn_next;
+var flipbook_btn_last;
 var flipbook_pgn;
 var flipbook_dots=[];
 var flipbook_options=[];
@@ -40,6 +46,7 @@ var flipbook_container;
 var flipbook_containerProxy;
 var flipbook_overlay;
 var flipbook_startDrag;
+var flipbook_hotspots=[]; // LKB
 
 	
 // Main Class
@@ -48,11 +55,14 @@ var flipbook = {
 		flipbook_pgn.visible=b;
 	},
 	showButtons: function(b){
+		flipbook_btn_first.visible=b; // LKB
 		flipbook_btn_prev.visible=b;
 		flipbook_btn_next.visible=b;
+		flipbook_btn_last.visible=b; // LKB
 	},
 	setPagination: function(pg){
-		
+		flipbook.showHotspots(pg); // LKB
+/*		
 		// Set current page in Dots
 		for(var i=0;i<flipbook_dots.length;i++){
 			if(i==(pg-1)){
@@ -61,10 +71,10 @@ var flipbook = {
 				flipbook_dots[i].opacity=0.3;	
 			}
 		}
-		
+*/		
 	},
 	createPagination: function(pgs){
-		
+/*		
 		// Create Dots for pagination
 		flipbook_pgn.width=(pgs*15)-8;
 		for(var i=0;i<pgs;i++){
@@ -78,10 +88,9 @@ var flipbook = {
 			});
 			flipbook_pgn.add(flipbook_dots[i]);
 		}
-		
+*/		
 	},
 	create: function(flipbook_opt){
-
 
 		// Default Parameters
 		var default_args = {
@@ -92,6 +101,7 @@ var flipbook = {
 			'height'			:	null,
 			'width'				:	null,
 			'pages'				:	null,
+			'pagesDir'			:   "",   // LKB
 			'attachTo'			: 	null,
 			'showPagination'	: 	true,
 			'showButtons'		: 	true 
@@ -107,9 +117,13 @@ var flipbook = {
 		flipbook_options = flipbook_opt;
 		
 
-		// Load Pages
+		// LKB
+		if (flipbook_options.pagesDir.length > 0 && flipbook_options.pagesDir[flipbook_options.pagesDir.length - 1] != Titanium.Filesystem.separator) {
+			flipbook_options.pagesDir += Titanium.Filesystem.separator;
+		}
+		// Load Pages 
 		for(i=0;i<flipbook_options.pages.length;i++){
-			flipbook_pages.push(flipbook_options.pages[i]);
+			flipbook_pages.push(flipbook_options.pagesDir + flipbook_options.pages[i]); // LKB
 		}
 
 
@@ -150,12 +164,21 @@ var flipbook = {
 		
 		
 		// Create Buttons
+		flipbook_btn_first = Ti.UI.createImageView({ // LKB
+			image:'flipbook/btn_first.png',
+			height:64,
+			width:64,
+			bottom:10,
+			left:12,
+			zIndex:7,
+			visible:flipbook_options.showButtons
+		});
 		flipbook_btn_prev = Ti.UI.createImageView({
 			image:'flipbook/btn_prev.png',
 			height:64,
 			width:64,
 			bottom:10,
-			left:12,
+			left:82, // LKB
 			zIndex:7,
 			visible:flipbook_options.showButtons
 		});
@@ -164,12 +187,23 @@ var flipbook = {
 			height:64,
 			width:64,
 			bottom:10,
+			right:82, // LKB
+			zIndex:7,
+			visible:flipbook_options.showButtons
+		});
+		flipbook_btn_last = Ti.UI.createImageView({
+			image:'flipbook/btn_last.png',
+			height:64,
+			width:64,
+			bottom:10,
 			right:12,
 			zIndex:7,
 			visible:flipbook_options.showButtons
 		});
+		flipbook_containerProxy.add(flipbook_btn_first); // LKB
 		flipbook_containerProxy.add(flipbook_btn_prev);
 		flipbook_containerProxy.add(flipbook_btn_next);
+		flipbook_containerProxy.add(flipbook_btn_last); // LKB
 		
 		
 		// Create Pagination Dots area
@@ -267,7 +301,6 @@ var flipbook = {
 
 
 		
-		// I don't know, but sometimes this line crash...
 		// Trying to fix.
 		flipbook_containerProxy.add(flipbook_overlay);
 		
@@ -370,6 +403,13 @@ var flipbook = {
 		
 
 		// Get Button's Click
+		flipbook_btn_first.addEventListener('click', function(e) { // LKB
+			// Check if isn't the first page
+			if(flipbook_actualPage>1){
+				// goto first page
+				flipbook.gotoPage(1,0);
+			}
+		});
 		flipbook_btn_prev.addEventListener('click', function(e) {
 			// Check if isn't the first page
 			if(flipbook_actualPage>1){
@@ -382,6 +422,13 @@ var flipbook = {
 			if(flipbook_actualPage<flipbook_pages.length){
 				// goto next page
 				flipbook.gotoPage('next',800);
+			}
+		});
+		flipbook_btn_last.addEventListener('click', function(e) { // LKB
+			// Check if isn't the last page
+			if(flipbook_actualPage<flipbook_pages.length){
+				// goto last page
+				flipbook.gotoPage(numPages,0);
 			}
 		});
 
@@ -406,7 +453,7 @@ var flipbook = {
 			flipbook.move(flipbook_container.width);
 			flipbook_actualPage=go;
 		}
-		
+
 		flipbook_imgBottom.image=flipbook_pages[flipbook_actualPage];
 		flipbook_imgRear.image=flipbook_pages[flipbook_actualPage-1];
 		flipbook_pgTop.image=flipbook_pages[flipbook_actualPage-1];
@@ -473,6 +520,122 @@ var flipbook = {
 		flipbook_imgBottom.animate({left:-xo,duration:v});
 		flipbook_pgBottom.animate({left:xo,duration:v});
 		
+	}, // LKB
+	createHotspot: function (pageSize, link, hotspot){
+		flipbook_overlay.width  = 'auto';  // This allows the real image size to be discovered
+		flipbook_overlay.height = 'auto';  // Unfortunately it slows the whole thing down
+
+		var ratioImage     = flipbook_overlay.size.height / flipbook_overlay.size.width;
+		var ratioContainer = flipbook_containerProxy.size.height / flipbook_containerProxy.size.width;
+		var imageWidth  = flipbook_containerProxy.width;
+		var imageHeight = flipbook_containerProxy.height;
+		var offsetX = 0;
+		var offsetY = 0;
+
+		// If the image aspect ratio doesn't match the screen aspect ratio
+		// work out if there is any offset to add to the hotspot position
+		if (ratioImage > ratioContainer) {
+			imageWidth = imageWidth / (ratioImage / ratioContainer);
+			offsetX = (flipbook_containerProxy.size.width - imageWidth) / 2;
+		}
+		else {
+			imageHeight = imageHeight / (ratioContainer / ratioImage);
+			offsetY = (flipbook_containerProxy.size.height - imageHeight) / 2;
+		}
+
+		flipbook_overlay.width  = flipbook_container.width;  // Put the width/height back otherwise when you flip pages
+		flipbook_overlay.height = flipbook_container.height; // the image visibly resizes as it turns
+
+		var ratioX = imageWidth  / pageSize[2];
+		var ratioY = imageHeight / pageSize[3];
+		
+		flipbook_hotspots.push(Ti.UI.createImageView({
+			borderWidth:1,
+			borderColor:'#f00',
+			height:Math.round((hotspot[3] - hotspot[1]) * ratioY),
+			width:Math.round((hotspot[2] - hotspot[0]) * ratioX),
+			bottom:Math.round(hotspot[1] * ratioY),
+			left:Math.round(hotspot[0] * ratioX) + offsetX,
+			zIndex:7,
+			visible:true
+		}));
+		flipbook_containerProxy.add(flipbook_hotspots[flipbook_hotspots.length - 1]);
+		flipbook_hotspots[flipbook_hotspots.length - 1].addEventListener('click', (function(link) {
+			return function (e) { 
+				if (link.substr(0, 7) == "mailto:") {
+					var emailDialog = Titanium.UI.createEmailDialog();
+//					emailDialog.subject = "Contact From App";
+					emailDialog.toRecipients = [link.substr(7)];
+//					emailDialog.messageBody = 'Please enter a message';
+					 
+					emailDialog.open();				
+				}
+				else {
+					// Goto the url using a browser
+					Ti.Platform.openURL(link);
+				}
+			};
+		})(link));
+	},
+	showHotspots: function(pg){
+		Ti.API.debug("showHotspots for page " + pg);
+		// Remove the current hotspots
+		while (flipbook_hotspots.length > 0) {
+			flipbook_containerProxy.remove(flipbook_hotspots[flipbook_hotspots.length - 1]);
+			flipbook_hotspots.pop();
+		}
+	
+		// Are there any hotspots for this page?
+		Ti.API.debug(flipbook_options.pagesDir);
+		Ti.API.debug(flipbook_pages[pg - 1]);
+		
+		var filePrefix = flipbook_pages[pg - 1].substr(flipbook_options.pagesDir.length, flipbook_pages[pg - 1].lastIndexOf(".") - flipbook_options.pagesDir.length);
+		var hotspots = Ti.Filesystem.getFile(flipbook_options.pagesDir, filePrefix + "_links.txt");
+		var pageinfo = Ti.Filesystem.getFile(flipbook_options.pagesDir, filePrefix + "_pageinfo.txt");
+		if (!hotspots.exists() || !pageinfo.exists()) {
+			return;
+		}
+		
+		// Get the page size
+		var linesBlob = pageinfo.read().text;
+		if (linesBlob.length < 1) {
+			return;
+		}
+				
+		var linesArray = linesBlob.split("\n");
+		var pageSize;
+		for (i=0; i<linesArray.length; i++) {
+			if (linesArray[i].indexOf("Box [") == -1) {
+				continue;
+			}
+			
+			pageSize = linesArray[i].substr(linesArray[i].indexOf("[") + 1, linesArray[i].indexOf("]") - linesArray[i].indexOf("[") - 1).split(" ");
+		}		
+	
+		// Create the new hotspots	
+		linesBlob = hotspots.read().text;
+		if (linesBlob.length < 1) {
+			return;
+		}
+				
+		linesArray = linesBlob.split("\n");
+		var link, rect;
+		for (i=0; i<linesArray.length; i++) {
+			if (linesArray[i].substr(0, 5) == "/URI ") {
+				// We've found either a URL or mailto
+				link = linesArray[i].substr(linesArray[i].indexOf("(") + 1, linesArray[i].indexOf(")") - linesArray[i].indexOf("(") - 1);
+			}
+			else
+			if (linesArray[i].substr(0, 6) == "/Rect ") {
+				// We've found some hotspot coordinates
+				rect = linesArray[i].substr(linesArray[i].indexOf("[") + 1, linesArray[i].indexOf("]") - linesArray[i].indexOf("[") - 1).split(" ");
+			}
+			
+			if (link && rect) {
+				flipbook.createHotspot(pageSize, link, rect);
+				link = rect = null;
+			}
+		}
 	}
 };
 

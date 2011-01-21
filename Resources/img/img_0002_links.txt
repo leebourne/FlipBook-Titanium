@@ -1,0 +1,2 @@
+/URI (http://www.quru.com/appcelerator)
+/Rect [90 403.614 273.27 413.614]
