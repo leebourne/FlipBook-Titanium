@@ -1,11 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 //  23/12/2010 - FlipBook 0.7 By Adriano
-//  21/01/2011 - Extended by Lee Khan-Bourne, all changes commented with LKB
+//  21/01/2011 - Extended by Lee Khan-Bourne (Quru)
 //				 Extended to cater for hyperlinks
 //				 Added first and last page buttons
-//				 Disabled pagination.
-//				 Added option of pagesDir to allow pages to be moved to the data dir in the future
+//				 Disabled pagination
+//				 Added option of pagesDir to allow pages to be 
+//                               moved to the data dir in the future
+//
+// Released under a Creative Commons License: 
+//  visit http://www.quru.com/appcelerator
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +50,7 @@ var flipbook_container;
 var flipbook_containerProxy;
 var flipbook_overlay;
 var flipbook_startDrag;
-var flipbook_hotspots=[]; // LKB
+var flipbook_hotspots=[]; // Quru
 
 	
 // Main Class
@@ -55,13 +59,13 @@ var flipbook = {
 		flipbook_pgn.visible=b;
 	},
 	showButtons: function(b){
-		flipbook_btn_first.visible=b; // LKB
+		flipbook_btn_first.visible=b; // Quru
 		flipbook_btn_prev.visible=b;
 		flipbook_btn_next.visible=b;
-		flipbook_btn_last.visible=b; // LKB
+		flipbook_btn_last.visible=b; // Quru
 	},
 	setPagination: function(pg){
-		flipbook.showHotspots(pg); // LKB
+		flipbook.showHotspots(pg); // Quru
 /*		
 		// Set current page in Dots
 		for(var i=0;i<flipbook_dots.length;i++){
@@ -101,7 +105,7 @@ var flipbook = {
 			'height'			:	null,
 			'width'				:	null,
 			'pages'				:	null,
-			'pagesDir'			:   "",   // LKB
+			'pagesDir'			:   "",   // Quru
 			'attachTo'			: 	null,
 			'showPagination'	: 	true,
 			'showButtons'		: 	true 
@@ -117,13 +121,13 @@ var flipbook = {
 		flipbook_options = flipbook_opt;
 		
 
-		// LKB
+		// Quru
 		if (flipbook_options.pagesDir.length > 0 && flipbook_options.pagesDir[flipbook_options.pagesDir.length - 1] != Titanium.Filesystem.separator) {
 			flipbook_options.pagesDir += Titanium.Filesystem.separator;
 		}
 		// Load Pages 
 		for(i=0;i<flipbook_options.pages.length;i++){
-			flipbook_pages.push(flipbook_options.pagesDir + flipbook_options.pages[i]); // LKB
+			flipbook_pages.push(flipbook_options.pagesDir + flipbook_options.pages[i]); // Quru
 		}
 
 
@@ -164,7 +168,7 @@ var flipbook = {
 		
 		
 		// Create Buttons
-		flipbook_btn_first = Ti.UI.createImageView({ // LKB
+		flipbook_btn_first = Ti.UI.createImageView({ // Quru
 			image:'flipbook/btn_first.png',
 			height:64,
 			width:64,
@@ -178,7 +182,7 @@ var flipbook = {
 			height:64,
 			width:64,
 			bottom:10,
-			left:82, // LKB
+			left:82, // Quru
 			zIndex:7,
 			visible:flipbook_options.showButtons
 		});
@@ -187,7 +191,7 @@ var flipbook = {
 			height:64,
 			width:64,
 			bottom:10,
-			right:82, // LKB
+			right:82, // Quru
 			zIndex:7,
 			visible:flipbook_options.showButtons
 		});
@@ -200,10 +204,10 @@ var flipbook = {
 			zIndex:7,
 			visible:flipbook_options.showButtons
 		});
-		flipbook_containerProxy.add(flipbook_btn_first); // LKB
+		flipbook_containerProxy.add(flipbook_btn_first); // Quru
 		flipbook_containerProxy.add(flipbook_btn_prev);
 		flipbook_containerProxy.add(flipbook_btn_next);
-		flipbook_containerProxy.add(flipbook_btn_last); // LKB
+		flipbook_containerProxy.add(flipbook_btn_last); // Quru
 		
 		
 		// Create Pagination Dots area
@@ -403,7 +407,7 @@ var flipbook = {
 		
 
 		// Get Button's Click
-		flipbook_btn_first.addEventListener('click', function(e) { // LKB
+		flipbook_btn_first.addEventListener('click', function(e) { // Quru
 			// Check if isn't the first page
 			if(flipbook_actualPage>1){
 				// goto first page
@@ -424,7 +428,7 @@ var flipbook = {
 				flipbook.gotoPage('next',800);
 			}
 		});
-		flipbook_btn_last.addEventListener('click', function(e) { // LKB
+		flipbook_btn_last.addEventListener('click', function(e) { // Quru
 			// Check if isn't the last page
 			if(flipbook_actualPage<flipbook_pages.length){
 				// goto last page
@@ -520,7 +524,7 @@ var flipbook = {
 		flipbook_imgBottom.animate({left:-xo,duration:v});
 		flipbook_pgBottom.animate({left:xo,duration:v});
 		
-	}, // LKB
+	}, // Quru
 	createHotspot: function (pageSize, link, hotspot){
 		flipbook_overlay.width  = 'auto';  // This allows the real image size to be discovered
 		flipbook_overlay.height = 'auto';  // Unfortunately it slows the whole thing down

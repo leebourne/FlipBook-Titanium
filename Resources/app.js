@@ -1,4 +1,9 @@
-// For help see http://www.quru.com/appcelerator/
+// Sample app to use the flipbook component
+// - modify pdfName and numPages accordingly
+// - name images with suffixes _0001.jpg, _0002.jpg ... _000n.jpg
+// 
+// Released under a Creative Commons License:
+//  visit http://www.quru.com/appcelerator
 
 // Your Window
 var win = Ti.UI.createWindow({
