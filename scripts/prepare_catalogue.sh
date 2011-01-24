@@ -1,6 +1,7 @@
 # Script to extract the page info and links from a PDF (or multiple PDFs)
 #
-# For help see http://www.quru.com/appcelerator/
+# Released under a Creative Commons License:
+#  visit http://www.quru.com/appcelerator
 #
 # Syntax:
 #  ./prepare_catalogue.sh <source.pdf> [target_dir]
